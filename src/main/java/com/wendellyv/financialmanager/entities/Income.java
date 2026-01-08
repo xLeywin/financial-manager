@@ -1,7 +1,6 @@
 package com.wendellyv.financialmanager.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wendellyv.financialmanager.enums.IncomeStatus;
 import jakarta.persistence.*;
 
@@ -30,7 +29,8 @@ public class Income implements Serializable {
     @JoinColumn(name = "income_category_id")
     private Category incomeCategory;
 
-    public Income() {}
+    public Income() {
+    }
 
     public Income(String title, Double amount, User user, IncomeStatus status, Category incomeCategory) {
         this.title = title;

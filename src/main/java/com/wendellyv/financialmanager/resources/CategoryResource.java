@@ -19,13 +19,13 @@ public class CategoryResource {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> findAll(){
+    public ResponseEntity<List<Category>> findAll() {
         List<Category> list = categoryService.findAll();
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Category> findById(@PathVariable Long id){
+    public ResponseEntity<Category> findById(@PathVariable Long id) {
         Category obj = categoryService.findById(id);
         return ResponseEntity.ok().body(obj);
     }

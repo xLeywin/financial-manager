@@ -1,7 +1,6 @@
 package com.wendellyv.financialmanager.resources;
 
 import com.wendellyv.financialmanager.entities.User;
-import com.wendellyv.financialmanager.repositories.UserRepository;
 import com.wendellyv.financialmanager.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +19,13 @@ public class UserResource {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll(){
+    public ResponseEntity<List<User>> findAll() {
         List<User> list = userService.findAll();
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long id){
+    public ResponseEntity<User> findById(@PathVariable Long id) {
         User obj = userService.findById(id);
         return ResponseEntity.ok().body(obj);
     }

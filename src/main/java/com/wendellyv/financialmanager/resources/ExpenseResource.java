@@ -1,9 +1,7 @@
 package com.wendellyv.financialmanager.resources;
 
 import com.wendellyv.financialmanager.entities.Expense;
-import com.wendellyv.financialmanager.entities.User;
 import com.wendellyv.financialmanager.services.ExpenseService;
-import com.wendellyv.financialmanager.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,13 +19,13 @@ public class ExpenseResource {
     private ExpenseService expenseService;
 
     @GetMapping
-    public ResponseEntity<List<Expense>> findAll(){
+    public ResponseEntity<List<Expense>> findAll() {
         List<Expense> list = expenseService.findAll();
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Expense> findById(@PathVariable Long id){
+    public ResponseEntity<Expense> findById(@PathVariable Long id) {
         Expense obj = expenseService.findById(id);
         return ResponseEntity.ok().body(obj);
     }
