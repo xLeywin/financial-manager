@@ -1,5 +1,6 @@
 package com.wendellyv.financialmanager.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ public class Income implements Serializable {
     private Long id;
     private String title;
     private Double amount;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT-3")
     private Instant date;
 
     @ManyToOne
@@ -23,11 +25,11 @@ public class Income implements Serializable {
 
     public Income() {}
 
-    public Income(Long id, String title, Double amount) {
-        this.id = id;
+    public Income(String title, Double amount, User user) {
         this.title = title;
         this.amount = amount;
         date = Instant.now();
+        this.user = user;
     }
 
     public Long getId() {
