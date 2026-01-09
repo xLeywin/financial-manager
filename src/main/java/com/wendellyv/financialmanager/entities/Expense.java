@@ -35,10 +35,10 @@ public class Expense implements Serializable {
     public Expense(String title, Double amount, User user, ExpenseStatus status, Category expenseCategory) {
         this.title = title;
         this.amount = amount;
-        date = Instant.now();
         this.user = user;
-        setStatus(status);
         this.expenseCategory = expenseCategory;
+        date = Instant.now();
+        setStatus(status);
     }
 
     public Long getId() {

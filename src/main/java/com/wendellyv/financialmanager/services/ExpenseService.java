@@ -1,6 +1,7 @@
 package com.wendellyv.financialmanager.services;
 
 import com.wendellyv.financialmanager.entities.Expense;
+import com.wendellyv.financialmanager.entities.Income;
 import com.wendellyv.financialmanager.repositories.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,25 @@ public class ExpenseService {
     public Expense findById(Long id) {
         Optional<Expense> expense = expenseRepository.findById(id);
         return expense.get();
+    }
+
+    public Expense insert(Expense expense) {
+        return expenseRepository.save(expense);
+    }
+
+    public Expense update(Long id, Expense updatedExpense) {
+        Expense currentExpense = expenseRepository.getReferenceById(id);
+        updateExpense(currentExpense, updatedExpense);
+        return expenseRepository.save(currentExpense);
+    }
+
+    public void updateExpense(Expense currentExpense, Expense updatedExpense) {
+        currentExpense.setTitle(updatedExpense.getTitle());
+        currentExpense.setAmount(updatedExpense.getAmount());
+        currentExpense.setStatus(updatedExpense.getStatus());
+    }
+
+    public void deleteById(Long id) {
+        expenseRepository.deleteById(id);
     }
 }

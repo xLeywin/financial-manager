@@ -35,10 +35,10 @@ public class Income implements Serializable {
     public Income(String title, Double amount, User user, IncomeStatus status, Category incomeCategory) {
         this.title = title;
         this.amount = amount;
-        date = Instant.now();
         this.user = user;
-        setStatus(status);
         this.incomeCategory = incomeCategory;
+        date = Instant.now();
+        setStatus(status);
     }
 
     public Long getId() {

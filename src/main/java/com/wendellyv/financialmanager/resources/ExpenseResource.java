@@ -1,14 +1,14 @@
 package com.wendellyv.financialmanager.resources;
 
 import com.wendellyv.financialmanager.entities.Expense;
+import com.wendellyv.financialmanager.entities.Income;
 import com.wendellyv.financialmanager.services.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,5 +28,28 @@ public class ExpenseResource {
     public ResponseEntity<Expense> findById(@PathVariable Long id) {
         Expense obj = expenseService.findById(id);
         return ResponseEntity.ok().body(obj);
+    }
+
+    @PostMapping
+    public ResponseEntity<Expense> insertExpense(@RequestBody Expense expense) {
+        expense = expenseService.insert(expense);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(expense.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(expense);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
+        updatedExpense =  expenseService.update(id, updatedExpense);
+        return ResponseEntity.ok().body(updatedExpense);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
+        expenseService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
