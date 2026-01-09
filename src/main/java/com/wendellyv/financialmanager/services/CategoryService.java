@@ -1,6 +1,7 @@
 package com.wendellyv.financialmanager.services;
 
 import com.wendellyv.financialmanager.entities.Category;
+import com.wendellyv.financialmanager.entities.Expense;
 import com.wendellyv.financialmanager.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,23 @@ public class CategoryService {
     public Category findById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         return category.get();
+    }
+
+    public Category insert(Category category) {
+        return categoryRepository.save(category);
+    }
+
+    public Category update(Long id, Category updatedCategory) {
+        Category currentCategory = categoryRepository.getReferenceById(id);
+        updateCategory(currentCategory, updatedCategory);
+        return categoryRepository.save(currentCategory);
+    }
+
+    public void updateCategory(Category currentCategory, Category updatedCategory) {
+        currentCategory.setTitle(updatedCategory.getTitle());
+    }
+
+    public void deleteById(Long id) {
+        categoryRepository.deleteById(id);
     }
 }

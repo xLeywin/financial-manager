@@ -20,8 +20,9 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "expenseCategory")
     @JsonIgnore
     private List<Expense> expenses = new ArrayList<>();
-    @JsonIgnore
+
     @OneToMany(mappedBy = "incomeCategory")
+    @JsonIgnore
     private List<Income> incomes = new ArrayList<>();
 
     public Category() {
