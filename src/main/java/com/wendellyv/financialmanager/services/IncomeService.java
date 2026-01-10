@@ -5,6 +5,7 @@ import com.wendellyv.financialmanager.entities.User;
 import com.wendellyv.financialmanager.repositories.IncomeRepository;
 import com.wendellyv.financialmanager.services.exceptions.DatabaseException;
 import com.wendellyv.financialmanager.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,9 +34,14 @@ public class IncomeService {
     }
 
     public Income update(Long id, Income updatedIncome) {
-        Income currentIncome = incomeRepository.getReferenceById(id);
-        updateIncome(currentIncome, updatedIncome);
-        return incomeRepository.save(currentIncome);
+        try{
+            Income currentIncome = incomeRepository.getReferenceById(id);
+            updateIncome(currentIncome, updatedIncome);
+            return incomeRepository.save(currentIncome);
+        }
+        catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
     }
 
     public void updateIncome(Income currentIncome, Income updatedIncome) {

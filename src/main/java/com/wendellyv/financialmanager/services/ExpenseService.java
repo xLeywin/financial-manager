@@ -5,6 +5,7 @@ import com.wendellyv.financialmanager.entities.Income;
 import com.wendellyv.financialmanager.repositories.ExpenseRepository;
 import com.wendellyv.financialmanager.services.exceptions.DatabaseException;
 import com.wendellyv.financialmanager.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,9 +34,14 @@ public class ExpenseService {
     }
 
     public Expense update(Long id, Expense updatedExpense) {
-        Expense currentExpense = expenseRepository.getReferenceById(id);
-        updateExpense(currentExpense, updatedExpense);
-        return expenseRepository.save(currentExpense);
+        try{
+            Expense currentExpense = expenseRepository.getReferenceById(id);
+            updateExpense(currentExpense, updatedExpense);
+            return expenseRepository.save(currentExpense);
+        }
+        catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
     }
 
     public void updateExpense(Expense currentExpense, Expense updatedExpense) {

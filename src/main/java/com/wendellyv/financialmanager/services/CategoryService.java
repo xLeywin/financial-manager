@@ -5,6 +5,7 @@ import com.wendellyv.financialmanager.entities.Expense;
 import com.wendellyv.financialmanager.repositories.CategoryRepository;
 import com.wendellyv.financialmanager.services.exceptions.DatabaseException;
 import com.wendellyv.financialmanager.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,9 +34,14 @@ public class CategoryService {
     }
 
     public Category update(Long id, Category updatedCategory) {
-        Category currentCategory = categoryRepository.getReferenceById(id);
-        updateCategory(currentCategory, updatedCategory);
-        return categoryRepository.save(currentCategory);
+        try{
+            Category currentCategory = categoryRepository.getReferenceById(id);
+            updateCategory(currentCategory, updatedCategory);
+            return categoryRepository.save(currentCategory);
+        }
+        catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
     }
 
     public void updateCategory(Category currentCategory, Category updatedCategory) {
