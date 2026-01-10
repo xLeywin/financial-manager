@@ -3,8 +3,11 @@ package com.wendellyv.financialmanager.services;
 import com.wendellyv.financialmanager.entities.Category;
 import com.wendellyv.financialmanager.entities.Expense;
 import com.wendellyv.financialmanager.repositories.CategoryRepository;
+import com.wendellyv.financialmanager.services.exceptions.DatabaseException;
 import com.wendellyv.financialmanager.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +43,14 @@ public class CategoryService {
     }
 
     public void deleteById(Long id) {
-        categoryRepository.deleteById(id);
+        try{
+            categoryRepository.deleteById(id);
+        }
+        catch (EmptyResultDataAccessException e){ // If there's no corresponding id
+            throw new ResourceNotFoundException(id);
+        }
+        catch (DataIntegrityViolationException e){ // If it has associated items
+            throw new DatabaseException(e.getMessage());
+        }
     }
 }
