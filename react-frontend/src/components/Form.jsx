@@ -29,8 +29,7 @@ const CATEGORIES = [
   { value: "OTHER", label: "Outros" },
 ];
 
-function Form({ button, formData, setFormData, onSubmit }) {
-  
+function Form({ button, formData, setFormData, onSubmit, onCancel, onRemove, onUpdate }) {
   // Unified handler for all input changes
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -42,15 +41,15 @@ function Form({ button, formData, setFormData, onSubmit }) {
 
     // Logical reset: if transaction type changes, clear the selected status
     if (name === "type") {
-      setFormData({ 
-        ...formData, 
-        [name]: value, 
-        status: "" 
+      setFormData({
+        ...formData,
+        [name]: value,
+        status: "",
       });
     } else {
-      setFormData({ 
-        ...formData, 
-        [name]: value 
+      setFormData({
+        ...formData,
+        [name]: value,
       });
     }
   };
@@ -61,13 +60,11 @@ function Form({ button, formData, setFormData, onSubmit }) {
     onSubmit(formData);
   };
 
-  // Clear form
-  const handleCancel = () => {
-    setFormData(initialForm);
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="p-4 border rounded bg-white shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 border rounded bg-white shadow-sm"
+    >
       {/* Title Field */}
       <div className="mb-3">
         <label className="form-label fw-bold">Descrição</label>
@@ -163,9 +160,27 @@ function Form({ button, formData, setFormData, onSubmit }) {
           </button>
         ) : (
           <>
-            <button type="button" className="btn btn-warning">Alterar</button>
-            <button type="button" className="btn btn-danger">Remover</button>
-            <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cancelar</button>
+            <button 
+              type="button" 
+              className="btn btn-warning"
+              onClick={onUpdate}
+            >
+              Alterar
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={onRemove}
+            >
+              Remover
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onCancel}
+            >
+              Cancelar
+            </button>
           </>
         )}
       </div>
