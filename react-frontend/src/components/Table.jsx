@@ -48,8 +48,12 @@ function Table({ data, select }) {
       <tbody>
         {data.map((obj, index) => {
           // Logic to handle both string category and nested object category
-          const categoryKey = obj.category || obj.expenseCategory?.title || obj.incomeCategory?.title;
-          const displayCategory = categoryMap[categoryKey] || categoryKey || "-";
+          const categoryKey =
+            obj.category ||
+            obj.expenseCategory?.title ||
+            obj.incomeCategory?.title;
+          const displayCategory =
+            categoryMap[categoryKey] || categoryKey || "-";
 
           return (
             <tr key={`${obj.type}-${obj.id || index}`}>
@@ -67,9 +71,12 @@ function Table({ data, select }) {
                 {formatCurrency(obj.amount)}
               </td>
               <td>
-                <button className="btn btn-sm btn-outline-primary"
+                <button
+                  className="btn btn-sm btn-outline-primary"
                   onClick={() => select(obj)}
-                >Selecionar</button>
+                >
+                  Selecionar
+                </button>
               </td>
             </tr>
           );

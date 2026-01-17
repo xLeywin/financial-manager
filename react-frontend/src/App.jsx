@@ -80,22 +80,93 @@ function App() {
       title: item.title,
       type: item.type,
       status: item.status,
-      category: item.category || item.expenseCategory?.title || item.incomeCategory?.title,
+      category:
+        item.category ||
+        item.expenseCategory?.title ||
+        item.incomeCategory?.title,
       amount: item.amount.toString(), // Convert number to string for the input field
+    });
+
+    setBtnRegister(false);
+  };
+
+  // Function to reset form and buttons
+  const handleCancel = () => {
+    setFormData(initialForm);
+    setBtnRegister(true);
+  };
+
+  // Remove item
+  const handleRemove = async () => {
+    if (!formData.id) {
+      alert("Selecione um item para remover.");
+      return;
+    }
+
+    // Endpoint selection based on type
+    const url =
+      formData.type === "income"
+        ? `http://localhost:8080/incomes/${formData.id}`
+        : `http://localhost:8080/expenses/${formData.id}`;
+
+    try {
+      const response = await fetch(url, { method: "DELETE" });
+
+      if (response.ok) {
+        handleCancel(); // Clear form and reset buttons using the function we made before
+        loadData(); // Refresh the table
+      } else {
+        console.error("Failed to remove the item.");
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  };
+
+  // Update item
+  const handleUpdate = async () => {
+    if (!formData.id) return;
+
+    const url =
+      formData.type === "income"
+        ? `http://localhost:8080/incomes/${formData.id}`
+        : `http://localhost:8080/expenses/${formData.id}`;
+
+    const payload = {
+      title: formData.title,
+      amount: Number(formData.amount),
+      status: formData.status,
+      category: formData.category,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT", // Method for updating
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      setBtnRegister(false);
+      if (response.ok) {
+        handleCancel();
+        loadData();
+      }
+    } catch (error) {
+      console.error("Error updating item:", error);
     }
+  };
 
   return (
     <div className="App">
-      <div >
+      <div>
         {/* Form */}
         <Form
           button={btnRegister}
           formData={formData}
           setFormData={setFormData}
           onSubmit={handleSave}
+          onCancel={handleCancel}
+          onRemove={handleRemove}
+          onUpdate={handleUpdate}
         />
 
         {/* Table */}
