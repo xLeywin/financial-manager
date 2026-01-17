@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Form from "./components/Form";
 import Table from "./components/Table";
-import "./App.css";
 
 // Initial form structure
 const initialForm = {
@@ -156,22 +155,27 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <div>
-        {/* Form */}
-        <Form
-          button={btnRegister}
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleSave}
-          onCancel={handleCancel}
-          onRemove={handleRemove}
-          onUpdate={handleUpdate}
-        />
-
-        {/* Table */}
-        <Table data={mergedData} select={selectItem} />
+    <div>
+      <br></br> 
+      <div style={{ textAlign: "center", fontWeight: "bold" }}>
+        <h1>Financial Manager</h1>
+        <h2>Gerenciador de Finanças</h2>
       </div>
+      <br></br>
+
+      {/* Form */}
+      <Form
+        button={btnRegister}
+        formData={formData}
+        setFormData={setFormData}
+        onSubmit={handleSave}
+        onCancel={handleCancel}
+        onRemove={handleRemove}
+        onUpdate={handleUpdate}
+      />
+
+      {/* Table */}
+      <Table data={mergedData} select={selectItem} />
     </div>
   );
 }
