@@ -37,7 +37,7 @@ function Form({ button, formData, setFormData, onSubmit, onCancel, onRemove, onU
       value = value.replace(",", ".");
       // Removes any character that is not a number or period
       // The Regex [^0-9.] means: "everything that is not 0 to 9 or period"
-      value = value.replace(/[^0-9]/g, "");
+      value = value.replace(/[^0-9.]/g, "");
     }
 
     // Logical reset: if transaction type changes, clear the selected status
@@ -156,7 +156,7 @@ function Form({ button, formData, setFormData, onSubmit, onCancel, onRemove, onU
       {/* Centered Button Section */}
       <div className="d-flex justify-content-center gap-2 mt-4">
         {button ? (
-          <button type="submit" className="btn btn-primary px-5 fw-bold">
+          <button type="submit" className="btn btn-dark px-5 fw-bold">
             Cadastrar
           </button>
         ) : (
