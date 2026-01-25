@@ -193,6 +193,7 @@ function App() {
       </button>
 
       <br />
+      <br />
 
       <Form
         button={btnRegister}

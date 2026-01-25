@@ -3,9 +3,8 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #213547;
+  background-color: #d1d1d1; /* fundo global mais escuro */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,21 +12,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
-  display: grid ;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #ffffff;
 }
 
 h1 {
@@ -65,4 +54,59 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.page-login {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.login-header {
+  text-align: center;
+}
+
+.login-logo {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.login-form {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.h2-login {
+  text-align: center;
+}
+
+.alert {
+  display: none;
+  margin: 0;
+}
+
+.alert.visible {
+  visibility: visible;
+  color: red;
+  display: block;
+  text-align: center;
 }

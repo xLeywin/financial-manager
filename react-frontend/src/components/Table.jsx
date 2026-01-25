@@ -117,7 +117,7 @@ function Table({
               <td>{formatDate(obj.date)}</td>
               <td>
                 <button
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn btn-sm btn-outline-dark"
                   onClick={() => select(obj)}
                 >
                   Selecionar
