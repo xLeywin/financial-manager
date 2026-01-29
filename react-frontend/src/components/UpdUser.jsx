@@ -6,24 +6,26 @@ import {
   isPasswordValid,
 } from "../utils/validators";
 
+import { toast } from "react-toastify";
+
 function UpdUser({ user, onUpdate, onCancel }) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
-  const [password, setPassword] = useState(false);
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isNameValid(name)) {
-      alert("Nome inválido.");
+      toast.error("Nome inválido.");
       return;
     }
     if (!isEmailValid(email)) {
-      alert("E-mail inválido.");
+      toast.error("E-mail inválido.");
       return;
     }
     if (!isPasswordValid(password)) {
-      alert("Senha não atende aos requisitos.");
+      toast.error("Senha não atende aos requisitos.");
       return;
     }
 
@@ -34,10 +36,9 @@ function UpdUser({ user, onUpdate, onCancel }) {
         password,
       });
       onUpdate(response.data);
-      alert("Perfil atualizado com sucesso!");
+      toast.success("Perfil atualizado com sucesso!");
     } catch (error) {
-      console.error("Erro ao atualizar usuário:", error);
-      alert("Houve um erro ao atualizar os dados.");
+      toast.error("Houve um erro ao atualizar os dados.");
     }
   };
 
@@ -60,7 +61,6 @@ function UpdUser({ user, onUpdate, onCancel }) {
           className="form-control mb-2"
           type="text"
           name="name"
-          autoComplete="name"
           placeholder="Nome completo"
         />
 
@@ -71,7 +71,6 @@ function UpdUser({ user, onUpdate, onCancel }) {
           className="form-control mb-2"
           type="email"
           name="email"
-          autoComplete="username"
           placeholder="E-mail"
         />
 
@@ -82,7 +81,6 @@ function UpdUser({ user, onUpdate, onCancel }) {
           className="form-control mb-2"
           type="password"
           name="password"
-          autoComplete="new-password"
           placeholder="Senha"
         />
 

@@ -6,6 +6,8 @@ import {
   isPasswordValid,
 } from "../utils/validators";
 
+import { toast } from "react-toastify";
+
 function Login({ onLogin }) {
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState("");
@@ -25,11 +27,10 @@ function Login({ onLogin }) {
       localStorage.setItem("user", JSON.stringify(response.data));
       onLogin(response.data);
     } catch (error) {
-      console.error("Login Error Details:", error.response?.data); // Add this
       if (error.response?.status === 401) {
-        setErrorMessage("E-mail ou senha inválidos");
+        toast.error("E-mail ou senha inválidos");
       } else {
-        setErrorMessage("Ocorreu um erro inesperado. Tente novamente.");
+        toast.error("Ocorreu um erro inesperado. Tente novamente.");
       }
     }
   }
@@ -43,24 +44,24 @@ function Login({ onLogin }) {
     e.preventDefault();
 
     if (!isNameValid(name)) {
-      setErrorMessage("Nome inválido.");
+      toast.error("Nome inválido.");
       return;
     }
     if (!isEmailValid(email)) {
-      setErrorMessage("E-mail inválido.");
+      toast.error("E-mail inválido.");
       return;
     }
     if (!isPasswordValid(password)) {
-      setErrorMessage("Senha não atende aos requisitos.");
+      toast.error("Senha não atende aos requisitos.");
       return;
     }
 
     try {
       await api.post("/users", { name, email, password });
-      alert("Conta criada com sucesso! Agora faça seu login.");
+      toast.success("Conta criada com sucesso! Agora faça seu login.");
       setIsRegistering(false);
     } catch (error) {
-      setErrorMessage("Erro ao criar conta. Verifique os dados.");
+      toast.error("Erro ao criar conta. Verifique os dados.");
     }
   }
 
@@ -89,9 +90,6 @@ function Login({ onLogin }) {
           <h2 className="h2-login">
             {isRegistering ? "Criar Conta" : "Login"}
           </h2>
-          <label className={`alert ${errorMessage ? "visible" : ""}`}>
-            {errorMessage}
-          </label>
 
           <div className="form-fields">
             {isRegistering && (

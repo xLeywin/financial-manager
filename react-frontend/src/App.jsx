@@ -5,6 +5,9 @@ import Login from "./components/Login";
 import UpdUser from "./components/UpdUser";
 import { api } from "./services/api";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // Initial form structure
 const initialForm = {
   title: "",
@@ -189,60 +192,87 @@ function App() {
     }
   };
 
-  if (!user) {
-    return <Login onLogin={handleLogin} />;
-  }
-  if (isUpdatingUser) {
-    return (
-      <UpdUser
-        user={user}
-        onUpdate={handleUserUpdated}
-        onCancel={() => setIsUpdatingUser(false)}
-      />
-    );
-  }
+  // if (!user) {
+  //   return <Login onLogin={handleLogin} />;
+  // }
+  // if (isUpdatingUser) {
+  //   return (
+  //     <UpdUser
+  //       user={user}
+  //       onUpdate={handleUserUpdated}
+  //       onCancel={() => setIsUpdatingUser(false)}
+  //     />
+  //   );
+  // }
   return (
-    <div className="container mt-4">
-      <div style={{ textAlign: "center", fontWeight: "bold" }}>
-        <h1>Financial Manager</h1>
-        <h2 className="text-muted">Gerenciador de Finanças</h2>
-      </div>
-      
-      <button onClick={handleLogout} className="btn btn-sm btn-outline-danger me-2">
-        Sair
-      </button>
-
-    
-      <button onClick={() => setIsUpdatingUser(true)} className="btn btn-sm btn-outline-dark">
-        Perfil
-      </button>
-
-      <br />
-      <br />
-
-      <Form
-        button={btnRegister}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={handleSave}
-        onCancel={handleCancel}
-        onRemove={handleRemove}
-        onUpdate={handleUpdate}
+    <>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
       />
 
-      <div className="mt-5 mb-3">
-        <label className="fw-bold fs-4">Buscar por mês</label>
+      {!user && <Login onLogin={handleLogin} />}
 
-        <Table
-          data={mergedData}
-          select={selectItem}
-          filterMonth={filterMonth}
-          filterYear={filterYear}
-          onMonthChange={setFilterMonth}
-          onYearChange={setFilterYear}
+      {user && isUpdatingUser && (
+        <UpdUser
+          user={user}
+          onUpdate={handleUserUpdated}
+          onCancel={() => setIsUpdatingUser(false)}
         />
-      </div>
-    </div>
+      )}
+
+      {user && !isUpdatingUser && (
+        <div className="container mt-4">
+          <div style={{ textAlign: "center", fontWeight: "bold" }}>
+            <h1>Financial Manager</h1>
+            <h2 className="text-muted">Gerenciador de Finanças</h2>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="btn btn-sm btn-outline-danger me-2"
+          >
+            Sair
+          </button>
+
+          <button
+            onClick={() => setIsUpdatingUser(true)}
+            className="btn btn-sm btn-outline-dark"
+          >
+            Perfil
+          </button>
+
+          <br />
+          <br />
+
+          <Form
+            button={btnRegister}
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={handleSave}
+            onCancel={handleCancel}
+            onRemove={handleRemove}
+            onUpdate={handleUpdate}
+          />
+
+          <div className="mt-5 mb-3">
+            <label className="fw-bold fs-4">Buscar por mês</label>
+
+            <Table
+              data={mergedData}
+              select={selectItem}
+              filterMonth={filterMonth}
+              filterYear={filterYear}
+              onMonthChange={setFilterMonth}
+              onYearChange={setFilterYear}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
