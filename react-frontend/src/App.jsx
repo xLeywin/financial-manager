@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
 import Form from "./components/Form";
 import Table from "./components/Table";
 import Login from "./components/Login";
 import UpdUser from "./components/UpdUser";
-import { api } from "./services/api";
 
+import { useEffect, useState } from "react";
+import { api } from "./services/api";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -191,9 +197,9 @@ function App() {
       console.error("Erro ao atualizar item:", error);
     }
   };
-  
+
   return (
-    <>
+    <Router>
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
@@ -202,65 +208,94 @@ function App() {
         pauseOnHover
       />
 
-      {!user && <Login onLogin={handleLogin} />}
-
-      {user && isUpdatingUser && (
-        <UpdUser
-          user={user}
-          onUpdate={handleUserUpdated}
-          onCancel={() => setIsUpdatingUser(false)}
+      <Routes>
+        {/* Login route */}
+        <Route
+          path="/login"
+          element={
+            !user ? <Login onLogin={handleLogin} /> : <Navigate to="/" />
+          }
         />
-      )}
 
-      {user && !isUpdatingUser && (
-        <div className="container mt-4">
-          <div style={{ textAlign: "center", fontWeight: "bold" }}>
-            <h1>Financial Manager</h1>
-            <h2 className="text-muted">Gerenciador de Finanças</h2>
-          </div>
+        {/* Profile route */}
+        <Route
+          path="/profile"
+          element={
+            user ? (
+              <UpdUser
+                user={user}
+                onUpdate={handleUserUpdated}
+                onCancel={() => window.history.back()}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
 
-          <button
-            onClick={handleLogout}
-            className="btn btn-sm btn-outline-danger me-2"
-          >
-            Sair
-          </button>
+        {/* Main route */}
+        <Route
+          path="/"
+          element={
+            user ? (
+              <div className="container mt-4">
+                <div style={{ textAlign: "center", fontWeight: "bold" }}>
+                  <h1>Financial Manager</h1>
+                  <h2 className="text-muted">Gerenciador de Finanças</h2>
+                </div>
 
-          <button
-            onClick={() => setIsUpdatingUser(true)}
-            className="btn btn-sm btn-outline-dark"
-          >
-            Perfil
-          </button>
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-sm btn-outline-danger me-2"
+                >
+                  Sair
+                </button>
 
-          <br />
-          <br />
+                {/* Navigation to /profile */}
+                <button
+                  onClick={() => (window.location.href = "/profile")}
+                  className="btn btn-sm btn-outline-dark"
+                >
+                  Perfil
+                </button>
 
-          <Form
-            button={btnRegister}
-            formData={formData}
-            setFormData={setFormData}
-            onSubmit={handleSave}
-            onCancel={handleCancel}
-            onRemove={handleRemove}
-            onUpdate={handleUpdate}
-          />
+                <br />
+                <br />
 
-          <div className="mt-5 mb-3">
-            <label className="fw-bold fs-4">Buscar por mês</label>
+                {/* Form data state */}
+                <Form
+                  button={btnRegister}
+                  formData={formData}
+                  setFormData={setFormData}
+                  onSubmit={handleSave}
+                  onCancel={handleCancel}
+                  onRemove={handleRemove}
+                  onUpdate={handleUpdate}
+                />
 
-            <Table
-              data={mergedData}
-              select={selectItem}
-              filterMonth={filterMonth}
-              filterYear={filterYear}
-              onMonthChange={setFilterMonth}
-              onYearChange={setFilterYear}
-            />
-          </div>
-        </div>
-      )}
-    </>
+                {/* Backend data */}
+                <div className="mt-5 mb-3">
+                  <label className="fw-bold fs-4">Buscar por mês</label>
+                  <Table
+                    data={mergedData}
+                    select={selectItem}
+                    filterMonth={filterMonth}
+                    filterYear={filterYear}
+                    onMonthChange={setFilterMonth}
+                    onYearChange={setFilterYear}
+                  />
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* Fallback route for paths not found */}
+        <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
+      </Routes>
+    </Router>
   );
 }
 
