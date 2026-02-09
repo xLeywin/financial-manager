@@ -119,6 +119,7 @@ function AppRoutes() {
   // Filters
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
+  const [filterUser, setFilterUser] = useState("");
 
   const filterByMonthYear = (item) => {
     if (!filterMonth && !filterYear) return true;
@@ -131,12 +132,20 @@ function AppRoutes() {
     return monthMatch && yearMatch;
   };
 
+  const filterByUser = (item) => {
+    if (!isAdmin || !filterUser) return true;
+
+    const userName = item.user?.name ?? "";
+    return userName.toLowerCase().includes(filterUser.toLowerCase());
+  };
+
   // Merge incomes and expenses
   const mergedData = [
     ...incomes.map((i) => ({ ...i, type: "income" })),
     ...expenses.map((e) => ({ ...e, type: "expense" })),
   ]
     .filter(filterByMonthYear)
+    .filter(filterByUser)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   // Select item
@@ -271,18 +280,15 @@ function AppRoutes() {
                 <br />
                 <br />
 
-                {/* Form data state. Admin can only read */}
-                {!isAdmin && (
-                  <Form
-                    button={btnRegister}
-                    formData={formData}
-                    setFormData={setFormData}
-                    onSubmit={handleSave}
-                    onCancel={handleCancel}
-                    onRemove={handleRemove}
-                    onUpdate={handleUpdate}
-                  />
-                )}
+                <Form
+                  button={btnRegister}
+                  formData={formData}
+                  setFormData={setFormData}
+                  onSubmit={handleSave}
+                  onCancel={handleCancel}
+                  onRemove={handleRemove}
+                  onUpdate={handleUpdate}
+                />
 
                 {/* Backend data */}
                 <div className="mt-5 mb-3">
@@ -292,8 +298,10 @@ function AppRoutes() {
                     select={selectItem}
                     filterMonth={filterMonth}
                     filterYear={filterYear}
+                    filterUser={filterUser}
                     onMonthChange={setFilterMonth}
                     onYearChange={setFilterYear}
+                    onUserChange={setFilterUser}
                     isAdmin={isAdmin}
                   />
                 </div>

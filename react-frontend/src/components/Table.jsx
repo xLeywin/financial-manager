@@ -3,8 +3,10 @@ function Table({
   select,
   filterMonth,
   filterYear,
+  filterUser,
   onMonthChange,
   onYearChange,
+  onUserChange,
   isAdmin,
 }) {
   // Currency formatter
@@ -49,6 +51,7 @@ function Table({
 
   return (
     <div className="row g-2 mb-3">
+      {/* Month filter */}
       <div className="col-auto">
         <label className="form-label fw-bold">Mês</label>
         <select
@@ -72,6 +75,7 @@ function Table({
         </select>
       </div>
 
+      {/* Year filter */}
       <div className="col-auto">
         <label className="form-label fw-bold">Ano</label>
         <select
@@ -87,6 +91,19 @@ function Table({
           <option value="2026">2026</option>
         </select>
       </div>
+
+      {/* User search bar */}
+      {isAdmin && (
+        <div className="col-auto">
+          <label className="form-label fw-bold">Buscar por usuário</label>
+          <input
+            className="form-control"
+            placeholder="Usuário"
+            value={filterUser}
+            onChange={(e) => onUserChange(e.target.value)}
+          ></input>
+        </div>
+      )}
 
       <table className="table table-hover">
         <thead>
