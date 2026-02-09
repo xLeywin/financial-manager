@@ -3,7 +3,7 @@ import Table from "./components/Table";
 import Login from "./components/Login";
 import UpdUser from "./components/UpdUser";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, memo, useCallback } from "react";
 import { api } from "./services/api";
 import {
   BrowserRouter as Router,
@@ -27,49 +27,36 @@ const initialForm = {
 function AppRoutes() {
   const navigate = useNavigate();
 
-  // Set user
+  // ============
+  // Auth / User
+  // ============
   const [user, setUser] = useState(() => {
     return JSON.parse(localStorage.getItem("user"));
   });
 
-  // Login Handle
-  const handleLogin = (userData) => {
+  const handleLogin = useCallback((userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-  };
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem("user");
     setUser(null);
     setIncomes([]);
     setExpenses([]);
     navigate("/login");
-  };
-
-  // Button control (register / edit mode)
-  const [btnRegister, setBtnRegister] = useState(true);
-
-  // Backend data
-  const [incomes, setIncomes] = useState([]);
-  const [expenses, setExpenses] = useState([]);
-
-  // Form data state
-  const [formData, setFormData] = useState(initialForm);
-
-  // Update user
-  const [isUpdatingUser, setIsUpdatingUser] = useState(false);
-
-  const handleUserUpdated = (updatedData) => {
-    localStorage.setItem("user", JSON.stringify(updatedData));
-    setUser(updatedData);
-    setIsUpdatingUser(false);
-    navigate("/");
-  };
+  }, [navigate]);
 
   const isAdmin = user?.role === "ADMIN";
 
+  // =============
+  // Backend data
+  // =============
+  const [incomes, setIncomes] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+
   // Load incomes and expenses
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -84,7 +71,7 @@ function AppRoutes() {
       console.error(error);
       toast.error("Erro ao carregar dados");
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -92,79 +79,51 @@ function AppRoutes() {
     }
   }, [user]);
 
-  // Save income or expense
-  const handleSave = async (data) => {
-    const endpoint = data.type === "income" ? "/incomes" : "/expenses";
+  // =============
+  // Form control
+  // =============
+  const [btnRegister, setBtnRegister] = useState(true);
+  const [formData, setFormData] = useState(initialForm);
 
-    const payload = {
-      title: data.title,
-      amount: Number(data.amount),
-      status: data.status,
-      category: data.category,
-      user: { id: user.id },
-    };
-
-    if (!user) return;
-
-    try {
-      await api.post(endpoint, payload);
-
-      setFormData(initialForm);
-      loadData();
-    } catch (error) {
-      console.error("Erro ao salvar item:", error);
-    }
-  };
-
-  // Filters
-  const [filterMonth, setFilterMonth] = useState("");
-  const [filterYear, setFilterYear] = useState("");
-
-  const filterByMonthYear = (item) => {
-    if (!filterMonth && !filterYear) return true;
-
-    const d = new Date(item.date);
-
-    const monthMatch = !filterMonth || d.getMonth() + 1 === Number(filterMonth);
-    const yearMatch = !filterYear || d.getFullYear() === Number(filterYear);
-
-    return monthMatch && yearMatch;
-  };
-
-  // Merge incomes and expenses
-  const mergedData = [
-    ...incomes.map((i) => ({ ...i, type: "income" })),
-    ...expenses.map((e) => ({ ...e, type: "expense" })),
-  ]
-    .filter(filterByMonthYear)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  // Select item
-  const selectItem = (item) => {
-    setFormData({
-      id: item.id,
-      title: item.title,
-      type: item.type,
-      status: item.status,
-      category: item.category,
-      amount: item.amount.toString(),
-    });
-
-    setBtnRegister(false);
-  };
-
-  // Reset form
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setFormData(initialForm);
     setBtnRegister(true);
-  };
+  }, []);
 
-  // Remove item
-  const handleRemove = async () => {
+  const handleSave = useCallback(
+    async (data) => {
+      if (!user) return;
+
+      const endpoint = data.type === "income" ? "/incomes" : "/expenses";
+
+      const payload = {
+        title: data.title,
+        amount: Number(data.amount),
+        status: data.status,
+        category: data.category,
+        user: { id: user.id },
+      };
+
+      try {
+        await api.post(endpoint, payload);
+        setFormData(initialForm);
+        await loadData();
+        toast.success("Item cadastrado com sucesso!");
+      } catch (error) {
+        console.error("Erro ao cadastrar item:", error);
+        toast.error("Erro ao cadastrar item.");
+      }
+    },
+    [user, loadData],
+  );
+
+  const handleRemove = useCallback(async () => {
     if (!formData.id) {
-      alert("Selecione um item para remover.");
+      toast.warn("Selecione um item para remover.");
       return;
     }
+
+    if (!window.confirm("Deseja realmente remover este item?")) return;
 
     const endpoint =
       formData.type === "income"
@@ -173,16 +132,16 @@ function AppRoutes() {
 
     try {
       await api.delete(endpoint);
-
       handleCancel();
-      loadData();
+      await loadData();
+      toast.warning("Item removido.");
     } catch (error) {
       console.error("Erro ao remover item:", error);
+      toast.error("Erro ao remover item.");
     }
-  };
+  }, [formData, handleCancel, loadData]);
 
-  // Update item
-  const handleUpdate = async () => {
+  const handleUpdate = useCallback(async () => {
     if (!formData.id) return;
 
     const endpoint =
@@ -199,26 +158,72 @@ function AppRoutes() {
 
     try {
       await api.put(endpoint, payload);
-
       handleCancel();
-      loadData();
+      await loadData();
+      toast.info("Atualizado com sucesso!");
     } catch (error) {
       console.error("Erro ao atualizar item:", error);
+      toast.error("Erro ao atualizar item.");
     }
-  };
+  }, [formData, handleCancel, loadData]);
 
+  const selectItem = useCallback((item) => {
+    setFormData({
+      id: item.id,
+      title: item.title,
+      type: item.type,
+      status: item.status,
+      category: item.category,
+      amount: item.amount.toString(),
+    });
+
+    setBtnRegister(false);
+  }, []);
+
+  // ========
+  // Filters
+  // ========
+  const [filterMonth, setFilterMonth] = useState("");
+  const [filterYear, setFilterYear] = useState("");
+  const [filterUser, setFilterUser] = useState("");
+
+  // Merge incomes and expenses
+  const mergedData = useMemo(() => {
+    const filterByMonthYear = (item) => {
+      if (!filterMonth && !filterYear) return true;
+
+      const d = new Date(item.date);
+      const monthMatch =
+        !filterMonth || d.getMonth() + 1 === Number(filterMonth);
+      const yearMatch = !filterYear || d.getFullYear() === Number(filterYear);
+
+      return monthMatch && yearMatch;
+    };
+
+    const filterByUser = (item) => {
+      if (!isAdmin || !filterUser) return true;
+
+      const userName = item.user?.name ?? "";
+      return userName.toLowerCase().includes(filterUser.toLowerCase());
+    };
+
+    return [
+      ...incomes.map((i) => ({ ...i, type: "income" })),
+      ...expenses.map((e) => ({ ...e, type: "expense" })),
+    ]
+      .filter(filterByMonthYear)
+      .filter(filterByUser)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [incomes, expenses, filterMonth, filterYear, filterUser, isAdmin]);
+
+  // =======
+  // Routes
+  // =======
   return (
     <>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-      />
+      <ToastContainer position="bottom-right" autoClose={3000} />
 
       <Routes>
-        {/* Login route */}
         <Route
           path="/login"
           element={
@@ -226,14 +231,17 @@ function AppRoutes() {
           }
         />
 
-        {/* Profile route */}
         <Route
           path="/profile"
           element={
             user ? (
               <UpdUser
                 user={user}
-                onUpdate={handleUserUpdated}
+                onUpdate={(updatedData) => {
+                  localStorage.setItem("user", JSON.stringify(updatedData));
+                  setUser(updatedData);
+                  navigate("/");
+                }}
                 onCancel={() => navigate("/")}
               />
             ) : (
@@ -242,16 +250,15 @@ function AppRoutes() {
           }
         />
 
-        {/* Main route */}
         <Route
           path="/"
           element={
             user ? (
               <div className="container mt-4">
-                <div style={{ textAlign: "center", fontWeight: "bold" }}>
-                  <h1>Financial Manager</h1>
-                  <h2 className="text-muted">Gerenciador de Finanças</h2>
-                </div>
+                <h1 className="text-center">Financial Manager</h1>
+                <h2 className="text-center text-muted">
+                  Gerenciador de Finanças
+                </h2>
 
                 <button
                   onClick={handleLogout}
@@ -260,7 +267,6 @@ function AppRoutes() {
                   Sair
                 </button>
 
-                {/* Navigation to /profile */}
                 <button
                   onClick={() => navigate("/profile")}
                   className="btn btn-sm btn-outline-dark"
@@ -270,33 +276,29 @@ function AppRoutes() {
 
                 <br />
                 <br />
+                <Form
+                  button={btnRegister}
+                  formData={formData}
+                  setFormData={setFormData}
+                  onSubmit={handleSave}
+                  onCancel={handleCancel}
+                  onRemove={handleRemove}
+                  onUpdate={handleUpdate}
+                />
 
-                {/* Form data state. Admin can only read */}
-                {!isAdmin && (
-                  <Form
-                    button={btnRegister}
-                    formData={formData}
-                    setFormData={setFormData}
-                    onSubmit={handleSave}
-                    onCancel={handleCancel}
-                    onRemove={handleRemove}
-                    onUpdate={handleUpdate}
-                  />
-                )}
-
-                {/* Backend data */}
-                <div className="mt-5 mb-3">
-                  <label className="fw-bold fs-4">Buscar por mês</label>
-                  <Table
-                    data={mergedData}
-                    select={selectItem}
-                    filterMonth={filterMonth}
-                    filterYear={filterYear}
-                    onMonthChange={setFilterMonth}
-                    onYearChange={setFilterYear}
-                    isAdmin={isAdmin}
-                  />
-                </div>
+                <br />
+                <br />
+                <Table
+                  data={mergedData}
+                  select={selectItem}
+                  filterMonth={filterMonth}
+                  filterYear={filterYear}
+                  filterUser={filterUser}
+                  onMonthChange={setFilterMonth}
+                  onYearChange={setFilterYear}
+                  onUserChange={setFilterUser}
+                  isAdmin={isAdmin}
+                />
               </div>
             ) : (
               <Navigate to="/login" />
@@ -304,7 +306,6 @@ function AppRoutes() {
           }
         />
 
-        {/* Fallback route for paths not found */}
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
       </Routes>
     </>

@@ -196,7 +196,11 @@ function Form({
             >
               Alterar
             </button>
-            <button type="button" className="btn btn-danger" onClick={handleRemove}>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleRemove}
+            >
               Remover
             </button>
             <button
