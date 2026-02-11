@@ -36,7 +36,6 @@ function Login({ onLogin }) {
         toast.error("E-mail ou senha inválidos");
       } else {
         toast.error("Ocorreu um erro inesperado. Tente novamente.");
-        console.log(error);
       }
     }
   }

@@ -57,6 +57,10 @@ public class UserResource {
 
     @PostMapping(value = { "/login", "/login/" })
     public ResponseEntity<UserDTO> login(@RequestBody LoginDTO dto) {
+
+        System.out.println("Email recebido: " + dto.getEmail());
+        System.out.println("Password recebida: " + dto.getPassword());
+
         User user = userService.login(dto.getEmail(), dto.getPassword());
         return ResponseEntity.ok(new UserDTO(user));
     }

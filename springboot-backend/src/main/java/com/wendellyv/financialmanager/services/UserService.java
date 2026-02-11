@@ -66,10 +66,18 @@ public class UserService {
     }
 
     public User login(String email, String password) {
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        System.out.println("Senha digitada: [" + password + "]");
+        System.out.println("Senha banco: [" + user.getPassword() + "]");
+
+        boolean match = passwordEncoder.matches(password, user.getPassword());
+
+        System.out.println("Resultado do matches(): " + match);
+
+        if (!match) {
             throw new RuntimeException("Invalid password.");
         }
 
